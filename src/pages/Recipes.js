@@ -1,18 +1,31 @@
 import React, { Component } from "react";
+import axios from "axios";
+
 import Search from "./../components/Search";
 import RecipeList from "../components/RecipeList";
-
-import { recipeData } from "./../data/tempList";
+import Spinner from "./../UI/Spinner";
 
 export class Recipes extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   state = {
-    recipes: recipeData,
-    search: ""
+    recipes: [],
+    search: "",
+    url: `https://www.food2fork.com/api/search?key=${process.env.REACT_APP_API_KEY}`,
+    loading: true
   };
+
+  async getRecipes() {
+    try {
+      const res = await axios.get(this.state.url);
+      const recipes = res.data.recipes;
+
+      this.setState({ recipes, loading: false });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  componentDidMount() {
+    this.getRecipes();
+  }
 
   handleChange = e => {
     this.setState({ search: e.target.value });
@@ -23,7 +36,7 @@ export class Recipes extends Component {
   };
 
   render() {
-    const { search, recipes } = this.state;
+    const { search, recipes, loading } = this.state;
 
     return (
       <>
@@ -32,7 +45,7 @@ export class Recipes extends Component {
           handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
         />
-        <RecipeList recipes={recipes} />
+        {loading ? <Spinner mtop="15%" /> : <RecipeList recipes={recipes} />}
       </>
     );
   }

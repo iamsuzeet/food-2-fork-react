@@ -1,21 +1,25 @@
 import React from "react";
 
-const Spinner = props => {
+const Spinner = ({ message, mtop }) => {
   return (
-    <div className="d-flex justify-content-center" style={{ marginTop: "50%" }}>
+    <div
+      className="d-flex justify-content-center"
+      style={{ marginTop: `${mtop}` }}
+    >
       <div
         className="spinner-border"
         style={{ width: "5rem", height: "5rem" }}
         role="status"
       >
-        <span className="sr-only">{props.message}</span>
+        <span className="sr-only">{message}</span>
       </div>
     </div>
   );
 };
 
 Spinner.defaultProps = {
-  message: "Loading..."
+  message: "Loading...",
+  mtop: "50%"
 };
 
 export default Spinner;
