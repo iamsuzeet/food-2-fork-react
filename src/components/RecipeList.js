@@ -12,9 +12,11 @@ export class RecipeList extends Component {
               <h1 className="text-slanted">recipe list</h1>
             </div>
           </div>
-          {recipes.map(recipe => (
-            <Recipe key={recipe.recipe_id} recipe={recipe} />
-          ))}
+          <div className="row">
+            {recipes.map(recipe => (
+              <Recipe key={recipe.recipe_id} recipe={recipe} />
+            ))}
+          </div>
         </div>
       </>
     );

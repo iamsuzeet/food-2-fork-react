@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Search from "./../components/Search";
 import RecipeList from "../components/RecipeList";
 
-import { recipeData } from "./../data/tempDetails";
+import { recipeData } from "./../data/tempList";
 
 export class Recipes extends Component {
   constructor(props) {
@@ -24,6 +24,7 @@ export class Recipes extends Component {
 
   render() {
     const { search, recipes } = this.state;
+
     return (
       <>
         <Search
