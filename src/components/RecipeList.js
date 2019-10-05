@@ -3,13 +3,13 @@ import { Recipe } from "./Recipe";
 
 export class RecipeList extends Component {
   render() {
-    const { recipes } = this.props;
+    const { recipes, searched } = this.props;
     return (
       <>
         <div className="container py-5">
           <div className="row">
             <div className="col-10 mx-auto col-md-6 text-center text-uppercase mb-3">
-              <h1 className="text-slanted">recipe list</h1>
+              <h1 className="text-slanted">{searched} recipe list</h1>
             </div>
           </div>
           <div className="row">
