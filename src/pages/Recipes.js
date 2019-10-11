@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import axios from "axios";
+import _ from "lodash";
 
 import Search from "./../components/Search";
 import RecipeList from "../components/RecipeList";
 import Spinner from "./../UI/Spinner";
+import Pagination from "../components/resusable/Pagination";
+
+import { paginate } from "../utils/paginate";
 
 export class Recipes extends Component {
   state = {
@@ -14,14 +18,16 @@ export class Recipes extends Component {
     base_url: `https://www.food2fork.com/api/search?key=${process.env.REACT_APP_API_KEY}`,
     query: `&q=`,
     error: "",
-    searched: ""
+    searched: "",
+    currentPage: 1,
+    pageSize: 6,
+    sortColumn: { path: "title", order: "asc" }
   };
 
   async getRecipes() {
     try {
       const res = await axios.get(this.state.url);
       const recipes = res.data.recipes;
-      console.log(recipes);
 
       if (recipes.length === 0) {
         this.setState({
@@ -59,7 +65,15 @@ export class Recipes extends Component {
     );
   };
 
-  renderList = (loading, error, recipes, searched) => {
+  renderList = (
+    loading,
+    error,
+    recipes,
+    searched,
+    pageSize,
+    totalCount,
+    currentPage
+  ) => {
     if (loading) {
       return <Spinner mtop="15%" />;
     } else {
@@ -76,13 +90,51 @@ export class Recipes extends Component {
           </section>
         );
       } else {
-        return <RecipeList recipes={recipes} searched={searched} />;
+        return (
+          <React.Fragment>
+            <RecipeList recipes={recipes} searched={searched} />
+            <Pagination
+              itemsCount={totalCount}
+              pageSize={pageSize}
+              onPageChange={this.handlePageChange}
+              currentPage={currentPage}
+            />
+          </React.Fragment>
+        );
       }
     }
   };
 
+  handlePageChange = page => {
+    this.setState({ currentPage: page });
+  };
+
+  getPagedData = () => {
+    const {
+      pageSize,
+      currentPage,
+      sortColumn,
+      recipes: allRecipes
+    } = this.state;
+
+    const sorted = _.orderBy(allRecipes, [sortColumn.path], [sortColumn.order]);
+
+    const recipes = paginate(sorted, currentPage, pageSize);
+
+    return { totalCount: allRecipes.length, data: recipes };
+  };
+
   render() {
-    const { search, recipes, loading, searched, error } = this.state;
+    const {
+      search,
+      loading,
+      searched,
+      error,
+      pageSize,
+      currentPage
+    } = this.state;
+
+    const { totalCount, data: recipes } = this.getPagedData();
 
     return (
       <>
@@ -91,7 +143,15 @@ export class Recipes extends Component {
           handleChange={this.handleChange}
           handleSubmit={this.handleSubmit}
         />
-        {this.renderList(loading, error, recipes, searched)}
+        {this.renderList(
+          loading,
+          error,
+          recipes,
+          searched,
+          pageSize,
+          totalCount,
+          currentPage
+        )}
       </>
     );
   }
